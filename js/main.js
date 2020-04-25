@@ -1,11 +1,4 @@
-var docs = document.getElementsByClassName("readout");
-var iteration = 0;
 
-
-for(var i = 0; i < docs.length; i++)
-{
-    write(docs[i], 150);
-}
 
 function write(s, d)
 {
