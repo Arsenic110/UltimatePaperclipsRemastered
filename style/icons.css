@@ -2,7 +2,7 @@
 {
     height: 1em;
     width: 1em;
-    margin-bottom: -2px;
+    margin-bottom: -0.11em;
 }
 .icon-warning-triangle
 {
@@ -16,7 +16,7 @@
 {
     content: url("../content/icons/sticky-note.svg");
 }
-.icon-comments
+.icon-comments, .icon-chat
 {
     content: url("../content/icons/comments.svg");
 }
@@ -43,4 +43,88 @@
 .icon-meter
 {
     content: url("../content/icons/tachometer-alt.svg");
+}
+.icon-flask
+{
+    content: url("../content/icons/flask.svg");
+}
+.icon-copy
+{
+    content: url("../content/icons/copy.svg");
+}
+.icon-heart
+{
+    content: url("../content/icons/heart.svg");
+}
+.icon-fire
+{
+    content: url("../content/icons/fire.svg");
+}
+.icon-lightbulb
+{
+    content: url("../content/icons/lightbulb.svg");
+}
+.icon-trash
+{
+    content: url("../content/icons/trash-alt.svg");
+}
+.icon-list
+{
+    content: url("../content/icons/list-alt.svg");
+}
+.icon-home
+{
+    content: url("../content/icons/home.svg");
+}
+.icon-eye
+{
+    content: url("../content/icons/eye.svg");
+}
+.icon-eye-green
+{
+    content: url("../content/icons/eye-green.svg");
+}
+.icon-plus
+{
+    content: url("../content/icons/plus.svg");
+}
+.icon-minus
+{
+    content: url("../content/icons/minus.svg");
+}
+.icon-redo, .icon-reset
+{
+    content: url("../content/icons/redo.svg");
+}
+.icon-pin, .icon-thumbtack
+{
+    content: url("../content/icons/thumbtack.svg");
+}
+.icon-eject
+{
+    content: url("../content/icons/eject.svg");
+}
+.icon-cog, .icon-gear, .icon-gearwheel
+{
+    content: url("../content/icons/cog.svg");
+}
+.icon-undo
+{
+    content: url("../content/icons/undo.svg");
+}
+.icon-info
+{
+    content: url("../content/icons/info.svg");
+}
+.icon-envelope, .icon-message
+{
+    content: url("../content/icons/envelope.svg");
+}
+.icon-power
+{
+    content: url("../content/icons/power-off.svg");
+}
+.icon-signal
+{
+    content: url("../content/icons/signal.svg");
 }
