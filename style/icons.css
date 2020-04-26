@@ -1,7 +1,46 @@
-.icon-warning
+.icon
 {
-    height: 0.9em;
-
-
+    height: 1em;
+    width: 1em;
+    margin-bottom: -2px;
+}
+.icon-warning-triangle
+{
     content: url("../content/icons/exclamation-triangle.svg");
+}
+.icon-warning-circle
+{
+    content: url("../content/icons/exclamation-circle.svg");
+}
+.icon-note
+{
+    content: url("../content/icons/sticky-note.svg");
+}
+.icon-comments
+{
+    content: url("../content/icons/comments.svg");
+}
+.icon-user
+{
+    content: url("../content/icons/user.svg");
+}
+.icon-heartbeat
+{
+    content: url("../content/icons/heartbeat.svg");
+}
+.icon-file-alt
+{
+    content: url("../content/icons/file-alt.svg");
+}
+.icon-tags
+{
+    content: url("../content/icons/tags.svg");
+}
+.icon-wifi
+{
+    content: url("../content/icons/wifi.svg");
+}
+.icon-meter
+{
+    content: url("../content/icons/tachometer-alt.svg");
 }
