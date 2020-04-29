@@ -10,6 +10,7 @@ html
     background-attachment: fixed;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     color: white;
+    font-size: 85%;
 }
 
 .button
@@ -54,4 +55,14 @@ html
 .text-grey
 {
     color: #999999;
+}
+.list-table
+{
+    border: 1px solid #40628a;
+    padding: 3px;
+}
+.list-table td
+{
+    background-color: rgb(0, 127, 71);
+    padding: 5px;
 }

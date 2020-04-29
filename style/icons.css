@@ -20,7 +20,7 @@
 {
     content: url("../content/icons/comments.svg");
 }
-.icon-user
+.icon-user, .icon-person, .icon-personel
 {
     content: url("../content/icons/user.svg");
 }
@@ -128,9 +128,20 @@
 {
     content: url("../content/icons/signal.svg");
 }
+.icon-handcuffs
+{
+    content: url("../content/icons/handcuffs.svg");
+    height: 1.6em;
+    width: 1.6em;
+    margin-top: -0.45em;
+    margin-bottom: -0.45em;
+    margin-left: -0.45em;
+    margin-right: -0.45em;
+}
 
-/*----------------------------------*/
-
+/*--------------------------------------------------------------------------------------------------------------------------------------*/
+/*------------------------------------------AUTO GENERATED SECTION----------------------------------------------------------------------*/
+/*--------------------------------------------------------------------------------------------------------------------------------------*/
 
 .icon-ad
 {
