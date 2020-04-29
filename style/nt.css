@@ -14,30 +14,30 @@ html
 
 .button
 {
-    border: 2px solid #161616;
     border-radius: 4px;
-    background-color: #40628a;
     color:white;
     padding: 3px;
+    margin: 1px;
 }
-.button:active
+.button-active
+{
+    border: 2px solid #161616;
+    background-color: #40628a;
+}
+.button-active:active
 {
     border: 2px solid #243c57;
 }
-.inactive-button:hover
-{
-    border: 2px solid #243c57;
-}
-.inactive-button
+.button-inactive
 {
     border: 2px solid transparent;
     background: none;
-    border-radius: 4px;
-    color:white;
-    padding: 3px;
-    font-size: 1rem;
 }
-.inactive-button:active
+.button-inactive:hover
+{
+    border: 2px solid #243c57;
+}
+.button-inactive:active
 {
     border: 2px solid #243c57;
     background-color: #40628a;
