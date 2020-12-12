@@ -1141,11 +1141,11 @@
 }
 .icon-dice-d20
 {
-  content: url(../content/icons/dice-d20.svg);
+  content: url("../content/icons/dice-d20.svg");
 }
 .icon-dice-d6
 {
-  content: url(../content/icons/dice-d6.svg);
+  content: url("../content/icons/dice-d6.svg");
 }
 .icon-dice-five
 {
