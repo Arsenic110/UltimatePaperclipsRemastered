@@ -10,35 +10,37 @@ html
     background-attachment: fixed;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     color: white;
-    font-size: 85%;
+    font-size: 185%;
 }
 
-.button
+.button, .btn
 {
     border-radius: 4px;
     color:white;
     padding: 3px;
     margin: 1px;
 }
-.button-active
+
+.button-active, .btn-active
 {
     border: 2px solid #161616;
     background-color: #40628a;
 }
-.button-active:active
+
+.button-active:active, .btn-active:active
 {
     border: 2px solid #243c57;
 }
-.button-inactive
+.button-inactive, .btn-inactive
 {
     border: 2px solid transparent;
     background: none;
 }
-.button-inactive:hover
+.button-inactive:hover, .btn-inactive:hover
 {
     border: 2px solid #243c57;
 }
-.button-inactive:active
+.button-inactive:active, .btn-inactive:active
 {
     border: 2px solid #243c57;
     background-color: #40628a;
@@ -80,5 +82,25 @@ html
     background: repeating-linear-gradient(-45deg, #e9c183 0px 10px, #cfa668 10px 20px);
     color: black;
     padding: 4px;
+}
 
+.console-window
+{
+    border: 1px solid  rgb(0, 127, 71);
+    padding: 15px;
+    margin: 30px auto;
+    background: black;
+    font-family: consolas;
+    color: rgb(0, 255, 0);
+}
+
+.cmd-clipboard
+{
+    color: rgb(0, 255, 0);
+    margin: 5 auto;
+    width: 100%;
+    height:auto;
+    background-color: transparent !important;
+    border:transparent;
+    resize:none;
 }
