@@ -8,17 +8,21 @@ html
     background-size: 30%, auto;
     background-position: 50%;
     background-attachment: fixed;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: Tahoma, Geneva, Verdana, sans-serif;
     color: white;
-    font-size: 185%;
 }
 
 .button, .btn
 {
+    font-size: 0.8rem;
     border-radius: 4px;
     color:white;
     padding: 3px;
     margin: 1px;
+    -webkit-appearance: button;
+    -moz-appearance: button;
+    appearance: button;
+    text-decoration: none;
 }
 
 .button-active, .btn-active
@@ -30,6 +34,10 @@ html
 .button-active:active, .btn-active:active
 {
     border: 2px solid #243c57;
+}
+.button-active:hover, .btn-active:hover
+{
+    cursor:default;
 }
 .button-inactive, .btn-inactive
 {
@@ -67,6 +75,7 @@ html
 {
     background-color: rgb(0, 127, 71);
     padding: 5px;
+    width: 15%;
 }
 .center-horizontal
 {
@@ -103,4 +112,9 @@ html
     background-color: transparent !important;
     border:transparent;
     resize:none;
+}
+
+li
+{
+    padding: 0.3rem;
 }
