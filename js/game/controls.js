@@ -2,9 +2,9 @@ class Control
 {
     constructor()
     {
-        this.transformX = 0;
-        this.transformY = 0;
-        this.scaleFactor = 1;
+        this.transformX = 600;
+        this.transformY = 500;
+        this.scaleFactor = 0.1;
 
         this.speed = 5;
 
@@ -14,6 +14,7 @@ class Control
             83, //s
             68, //a
             65, //d
+            32, //space
         ];
 
         this.trArray = [];
@@ -29,6 +30,7 @@ class Control
         if(this.trArray[3])
             this.transformX += this.speed;
         
+        
         translate(this.transformX, this.transformY);
         scale(this.scaleFactor);
     }
@@ -40,6 +42,8 @@ class Control
             if(keyCode == this.keys[i])
                 this.trArray[i] = true;
         }
+        if(keyCode == 32)
+            simulate = !simulate;
     }
 
     keyReleased(keyCode)
@@ -66,8 +70,9 @@ class Control
         this.transformY = mouseY * (1-s) + this.transformY * s;
     }
 
-    mouseDragged() {
-        this.transformX += mouseX-pmouseX;
-        this.transformY += mouseY-pmouseY;
-      }
+    mouseDragged() 
+    {
+        this.transformX += mouseX - pmouseX;
+        this.transformY += mouseY - pmouseY;
+    }
 }

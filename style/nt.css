@@ -118,3 +118,18 @@ li
 {
     padding: 0.3rem;
 }
+
+.ui
+{
+    overflow: visible;
+    position: absolute;
+
+    margin: 1rem;
+    border-style: solid;
+    border-width: 0.5rem;
+
+    text-align: center;
+
+    background-color: gray;
+    border-color: #292929;
+}

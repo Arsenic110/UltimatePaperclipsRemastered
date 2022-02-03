@@ -1,10 +1,15 @@
 let control;
+let ui;
 let systems = [];
+
+var timeFactor = 5;
+var simulate = true;
 
 function setup()
 {
     createCanvas(window.innerWidth - 20, window.innerHeight - 20);
     control = new Control();
+    ui = new UI();
 
     for(let i = 0; i < random(10, 20); i++)
     {
@@ -15,6 +20,7 @@ function setup()
 function draw()
 {
     background(0);
+    ui.update();
     control.update();
 
     for(let i = 0; i < systems.length; i++)

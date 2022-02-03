@@ -1,0 +1,14 @@
+#info-div
+{
+    width: 350px; 
+    height: 400px;
+    top: 52%;
+
+}
+
+#header-div
+{
+    width: 300px;
+    height: 100px;
+    left: calc(50% - 190px);
+}
