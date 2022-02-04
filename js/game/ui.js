@@ -3,11 +3,27 @@ class UI
 {
     constructor()
     {
+        this.header = $("#header-div");
+        this.info = $("#info-div");
         this.headertext = $("#header-div").find("h1")[0];
+        this.selected = undefined;
     }
 
     update()
     {
+        this.header.hide();
+        this.info.hide();
         this.headertext.innerHTML = simulate ? "Simulating" : "Paused";
+        if(this.selected)
+            control.panTo(this.selected.x, this.selected.y);
+    }
+
+    setSelect(body)
+    {
+        if(this.selected != undefined)
+            this.selected.highlight = false;
+        if(body != undefined)
+            body.highlight = true;
+        this.selected = body;
     }
 }

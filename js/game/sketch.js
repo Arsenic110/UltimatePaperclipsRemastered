@@ -1,13 +1,21 @@
 let control;
 let ui;
-let systems = [];
+var systems = [];
 
-var timeFactor = 5;
+var selectedPlanet;
+
+var mouseXWorld = 0, mouseYWorld = 0;
+
+var debugCursorWrite;
+
+var timeFactor = 10;
 var simulate = true;
+
+var scaleconstant = 5;
 
 function setup()
 {
-    createCanvas(window.innerWidth - 20, window.innerHeight - 20);
+    createCanvas(window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth, window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight);
     control = new Control();
     ui = new UI();
 
@@ -21,13 +29,28 @@ function draw()
 {
     background(0);
     ui.update();
+
+    //TRANSLATE
     control.update();
+
+    //debugCursorWrite = "(X: " + mouseXWorld + ", Y: " + mouseYWorld + ")\n" + (1 / control.scaleFactor);
+    debugCursorWrite = (ui.selected ? ui.selected.name : "");
+
+
 
     for(let i = 0; i < systems.length; i++)
     {
         systems[i].draw();
     }
-    //circles();
+
+
+    textSize(20 * (1 / control.scaleFactor));
+    push();
+    fill(255);
+    //ellipse(mouseXWorld, mouseYWorld, 15);
+
+    text(debugCursorWrite, mouseXWorld, mouseYWorld);
+    pop();
 }
 
 function keyPressed()
@@ -43,17 +66,16 @@ function keyReleased()
 function mouseWheel(e)
 {
     control.mouseWheel(e);
-    return false;
+    
+    return {passive:false};
+}
+function mouseClicked()
+{
+    control.mouseClicked();
 }
 
 function mouseDragged() 
 {
     control.mouseDragged();
-}
-
-function circles()
-{
-    fill(255);
-    ellipse(150, 150, 50, 50);
-    ellipse(150, 250, 25, 25);
+    return false;
 }

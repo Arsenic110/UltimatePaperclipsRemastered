@@ -19,6 +19,7 @@ class Control
 
         this.trArray = [];
     }
+
     update()
     {
         if(this.trArray[0])
@@ -30,9 +31,21 @@ class Control
         if(this.trArray[3])
             this.transformX += this.speed;
         
+        console.log("camera:", this.transformX, this.transformY, this.scaleFactor);
+        
+        mouseXWorld = (mouseX - this.transformX) * (1 / this.scaleFactor);
+        mouseYWorld = (mouseY - this.transformY) * (1 / this.scaleFactor);
         
         translate(this.transformX, this.transformY);
         scale(this.scaleFactor);
+    }
+
+    panTo(x ,y)
+    {
+        this.transformX = x;
+        this.transformY = y;
+        this.applyScale(1);
+        console.log("planet:", x, y);
     }
 
     keyPressed(keyCode)
@@ -72,7 +85,27 @@ class Control
 
     mouseDragged() 
     {
+        if(mouseButton != "center")
+            return;
         this.transformX += mouseX - pmouseX;
         this.transformY += mouseY - pmouseY;
+    }
+
+    mouseClicked()
+    {
+
+        //check if we clicked on a planet
+        var bwa;
+        for(let i = 0; i < systems.length; i++)
+        {
+            bwa = systems[i].checkCollision();
+            if(bwa != undefined)
+                break;
+        }
+        //if(bwa == undefined)
+        //    return;
+
+        ui.setSelect(bwa);
+
     }
 }

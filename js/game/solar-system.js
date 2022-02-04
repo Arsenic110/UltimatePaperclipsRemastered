@@ -2,94 +2,138 @@ class SolarSystem
 {
     constructor()
     {
-        this.x = random(-window.innerWidth, window.innerWidth)* 3;
-        this.y = random(-window.innerHeight, window.innerHeight) * 3;
 
+        //generate random position
+        this.x = random(-window.innerWidth, window.innerWidth)* (3 * scaleconstant);
+        this.y = random(-window.innerHeight, window.innerHeight) * (3 * scaleconstant);
+
+        //random color
         this.B = random(0, 100);
         this.R = random(200, 255);
         this.G = random(120, 200);
 
         this.radius = random(80, 180);
 
+        //generate some planet bodies
         this.planets = [];
         for(let i = 0; i < random(1, 10); i++)
         {
-            this.planets.push(new Planet(this.x + 100 + 40 * (i + 1), this.y));
-            this.planets[i].rotateDeg(this.x, this.y, random(0, 360));
+            this.planets.push(new Body(this.x + (100 * scaleconstant) + 40 * ((i + 1) * scaleconstant), this.y,"Planet " + i, 3))
         }
-
     }
+
     draw()
     {
-        noStroke();
-        fill(this.R, this.G, this.B);
-        ellipse(this.x , this.y, this.radius);
-
-        if (this.planets.length == 0)
-            return;
         for(let i = 0; i < this.planets.length; i++)
         {
             if(simulate)
             {
-                this.planets[i].rotate(this.x, this.y, i * timeFactor);
-                for(let j = 0; j < this.planets[i].moons.length; j++)
-                {
-                    this.planets[i].moons[j].rotate(this.planets[i].x, this.planets[i].y, j * timeFactor / 10);
-                    this.planets[i].moons[j].rotate(this.x, this.y, i * timeFactor);
-                }
-
+                //planet around star
+                this.planets[i].rotate(this.x, this.y, (i + 1) * timeFactor);
             }
-
-            //draw planets -- REFACTOR LATER
-            fill(this.planets[i].R, this.planets[i].G, this.planets[i].B);
-            ellipse(this.planets[i].x, this.planets[i].y, this.planets[i].radius)
-
-            for(let j = 0; j < this.planets[i].moons.length; j++)
-            {
-                //draw moons
-                fill(this.planets[i].moons[j].R);
-                ellipse(this.planets[i].moons[j].x, this.planets[i].moons[j].y, this.planets[i].moons[j].radius);
-            }
+            this.planets[i].drawBody();
         }
-        fill(255);
+
+        push();
+
+        noStroke();
+        fill(this.R, this.G, this.B);
+        ellipse(this.x , this.y, this.radius);
+
+        pop();
+        return;
+    }
+
+    checkCollision()
+    {
+        //this is a mess. returns [] if no collision, ["planet", 0-9], or ["moon", 0-9, 0-9]
+        var target;// = [];
+        for(let v = 0; v < this.planets.length; v++)
+        {
+            if (dist(mouseXWorld, mouseYWorld, this.planets[v].x, this.planets[v].y) <= this.planets[v].radius / 2)
+            {
+
+                target = this.planets[v];
+            }
+
+            for(let p = 0; p < this.planets[v].satellites.length; p++)
+            {
+                if (dist(mouseXWorld, mouseYWorld, this.planets[v].satellites[p].x, this.planets[v].satellites[p].y) <= this.planets[v].satellites[p].radius / 2)
+                {
+                    target = this.planets[v].satellites[p];
+                }
+            }
+            
+        }
+        return target;
     }
 }
 
-class Planet
+class Body
 {
-    constructor(x ,y)
+    constructor(x, y, name, sat, maxmass)
     {
         this.x = x;
         this.y = y;
 
-        this.mass = random(0.1, 20);
+        this.highlight = false;
 
-        this.radius = Math.sqrt(this.mass) * 3;
+        this.name = name;
 
-        this.moons = [];
-        for(let i = 0; i < random(0, 5); i++)
+        //generate mass, which is then used for radius
+        if(maxmass == null)
+            this.mass = random(0.1, 20);
+        else
+            this.mass = random(maxmass / 10, maxmass);
+
+        //radius (used for rendering & hitboxes)
+        this.radius = Math.sqrt(this.mass) * (3 * scaleconstant);
+
+        if(sat == null)
+            sat = 0;
+        if(sat < 1)
+            sat = 0;
+
+        //any satellites?
+        this.satellites = [];
+        for(let i = 0; i < sat; i++)
         {
-            this.moons.push(new Moon(this.x + 5 * (i + 1), this.y));
-            //this.moons[i].rotateDeg(this.x, this.y, random(0, 360));
+            //push new satellites
+            this.satellites.push(new Body(this.x + (this.radius * 1) + i * this.radius / 2, this.y, this.name + ", Moon " + i, random(0, 1), 0.5));
         }
 
-        this.R = random(0, 255) + 10;
-        this.G = random(0, 255) + 10;
-        this.B = random(0, 255) + 10;
-
+        this.color =
+        {
+            R: random(0, 255) + 10,
+            G: random(0, 255) + 10,
+            B: random(0, 255) + 10
+        }
     }
 
     rotate(cx, cy, index) 
     {
+        //index is degrees
         var radians = (Math.PI / 180) * (2 / index),
         cos = Math.cos(radians),
         sin = Math.sin(radians),
         nx = (cos * (this.x - cx)) + (sin * (this.y - cy)) + cx,
         ny = (cos * (this.y - cy)) - (sin * (this.x - cx)) + cy;
-        
+
+
+        //console.log(this.x, this.nx, index);
         this.x = nx;
         this.y = ny;
+
+
+        for(let i = 0; i < this.satellites.length; i++)
+        {
+            this.satellites[i].rotate(cx, cy, index);
+            this.satellites[i].rotate(this.x, this.y, (i + 1) * timeFactor / 10);
+
+        }
+        
     }
+
     rotateDeg(cx, cy, deg) 
     {
         var radians = (Math.PI / 180) * deg,
@@ -103,49 +147,31 @@ class Planet
 
         for(let i = 0; i < this.moons.length; i++)
         {
-            this.moons[i].x = this.x + 5 * (i + 1);
-            this.moons[i].y = this.y;
+        //    this.moons[i].x = (5 * scaleconstant) + 100 * ((i + 1) * scaleconstant);
+        //    this.moons[i].y = this.y;
         }
     }
-}
 
-class Moon
-{
-    constructor(x ,y)
+    drawBody()
     {
-        this.x = x;
-        this.y = y;
+        push();
 
-        this.mass = random(0.02, 0.5);
+        noStroke();
 
-        this.radius = Math.sqrt(this.mass) * 3;
+        if(this.highlight)
+        {
+            fill(255);
+            ellipse(this.x, this.y, this.radius * 1.1);
+        }
 
-        this.R = random(0, 255) + 10;
-        this.G = this.R
-        this.B = this.R
+        fill(this.color.R, this.color.G, this.color.B);
+        ellipse(this.x, this.y, this.radius);
 
-    }
+        for(let i = 0; i < this.satellites.length; i++)
+        {
+            this.satellites[i].drawBody();
+        }
 
-    rotate(cx, cy, index) 
-    {
-        var radians = (Math.PI / 180) * (2 / index),
-        cos = Math.cos(radians),
-        sin = Math.sin(radians),
-        nx = (cos * (this.x - cx)) + (sin * (this.y - cy)) + cx,
-        ny = (cos * (this.y - cy)) - (sin * (this.x - cx)) + cy;
-        
-        this.x = nx;
-        this.y = ny;
-    }
-    rotateDeg(cx, cy, deg) 
-    {
-        var radians = (Math.PI / 180) * deg,
-        cos = Math.cos(radians),
-        sin = Math.sin(radians),
-        nx = (cos * (this.x - cx)) + (sin * (this.y - cy)) + cx,
-        ny = (cos * (this.y - cy)) - (sin * (this.x - cx)) + cy;
-        
-        this.x = nx;
-        this.y = ny;
+        pop();
     }
 }
