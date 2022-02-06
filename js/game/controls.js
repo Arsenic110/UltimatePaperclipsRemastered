@@ -2,9 +2,14 @@ class Control
 {
     constructor()
     {
-        this.transformX = 600;
-        this.transformY = 500;
-        this.scaleFactor = 0.1;
+        this.transform = createVector(10, 10);
+
+
+        this.scaleFactor = 1;
+
+        this.scale = (1 / this.scaleFactor);
+
+        this.test = false;
 
         this.speed = 5;
 
@@ -15,6 +20,7 @@ class Control
             68, //a
             65, //d
             32, //space
+            67, //C
         ];
 
         this.trArray = [];
@@ -22,30 +28,71 @@ class Control
 
     update()
     {
+        this.scale = (1 / this.scaleFactor);
+        mouse = createVector(mouseX, mouseY);
+        mouseWorld = this.transformToWorld(createVector(mouseX - window.width / 2, mouseY - window.height / 2));
+
+        //move if key down
         if(this.trArray[0])
-            this.transformY += this.speed;
+        {
+            this.transform.y -= this.speed;
+            ui.setSelect(undefined);
+        }
         if(this.trArray[1])
-            this.transformY -= this.speed;
+        {
+            this.transform.y += this.speed;
+            ui.setSelect(undefined);
+        }
         if(this.trArray[2])
-            this.transformX -= this.speed;
+        {
+            this.transform.x += this.speed;
+            ui.setSelect(undefined);
+        }
         if(this.trArray[3])
-            this.transformX += this.speed;
+        {
+            this.transform.x -= this.speed;
+            ui.setSelect(undefined);
+        }
+
+        //transform screenspace coords into worldspace
+        //mouseWorld.x = this.transformToWorld(createVector(mouseX - window.width / 2, mouseY - window.height / 2)).x;
+        //mouseWorld.y = this.transformToWorld(createVector(mouseX - window.width / 2, mouseY - window.height / 2)).y;
         
-        console.log("camera:", this.transformX, this.transformY, this.scaleFactor);
-        
-        mouseXWorld = (mouseX - this.transformX) * (1 / this.scaleFactor);
-        mouseYWorld = (mouseY - this.transformY) * (1 / this.scaleFactor);
-        
-        translate(this.transformX, this.transformY);
-        scale(this.scaleFactor);
+
     }
 
-    panTo(x ,y)
+    draw()
     {
-        this.transformX = x;
-        this.transformY = y;
-        this.applyScale(1);
-        console.log("planet:", x, y);
+        this.performTransform();
+    }
+
+    performTransform()
+    {
+
+        //make scale around center - needs to be constant
+        translate(window.width / 2, window.height / 2);
+        scale(this.scaleFactor);
+
+        translate(-this.transform.x, -this.transform.y);
+    }
+
+    panTo(c)
+    {
+        this.transform = c;
+    }
+
+    transformToWorld(c)
+    {
+        let nx = this.transform.x + c.x * this.scale,
+            ny = this.transform.y + c.y * this.scale;
+        return createVector(nx, ny);
+    }
+
+    transformToScreen(c)
+    {
+        let nx = (c.x - this.transform.x) / this.scale,
+            ny = (c.y - this.transform.y) / this.scale;
+        return createVector(nx, ny);
     }
 
     keyPressed(keyCode)
@@ -55,8 +102,18 @@ class Control
             if(keyCode == this.keys[i])
                 this.trArray[i] = true;
         }
+
+        //pause if spacebar hit
         if(keyCode == 32)
             simulate = !simulate;
+        
+        //print coords if C hit
+        if(keyCode == 67)
+        {
+            //this.transform = this.transformToWorld(createVector(mouseX - window.width / 2, mouseY - window.height / 2));
+            background(0);
+        }
+
     }
 
     keyReleased(keyCode)
@@ -79,16 +136,28 @@ class Control
     applyScale(s) 
     {
         this.scaleFactor = this.scaleFactor * s;
-        this.transformX = mouseX * (1-s) + this.transformX * s;
-        this.transformY = mouseY * (1-s) + this.transformY * s;
+
+
+        //mouseX and Y used for zooming into the mouse location
+        //this.transform.x = mouseX * (1-s) + this.transform.x * s;
+        //this.transform.y = mouseY * (1-s) + this.transform.y * s;
+
+        //this SORTA worked
+        //this.transform.x += mouseX / s;
+        //this.transform.y += mouseY / s;
+
+        //this.transform.x -= mouseWorld.x;
+        //this.transform.y -= mouseWorld.y;
     }
 
     mouseDragged() 
     {
         if(mouseButton != "center")
             return;
-        this.transformX += mouseX - pmouseX;
-        this.transformY += mouseY - pmouseY;
+        ui.setSelect(undefined);
+        //drag transformation
+        this.transform.x -= (mouseX - pmouseX) * this.scale;
+        this.transform.y -= (mouseY - pmouseY) * this.scale;
     }
 
     mouseClicked()

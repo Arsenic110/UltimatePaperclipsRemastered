@@ -15,7 +15,12 @@ class UI
         this.info.hide();
         this.headertext.innerHTML = simulate ? "Simulating" : "Paused";
         if(this.selected)
-            control.panTo(this.selected.x, this.selected.y);
+            control.panTo(this.selected.pos);
+    }
+
+    draw()
+    {
+        
     }
 
     setSelect(body)

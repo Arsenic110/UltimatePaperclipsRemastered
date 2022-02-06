@@ -4,14 +4,17 @@ var systems = [];
 
 var selectedPlanet;
 
-var mouseXWorld = 0, mouseYWorld = 0;
+var mouse; //createVector(mouseX, mouseY);
+var mouseWorld;// = createVector(0, 0);
 
-var debugCursorWrite;
+var debugOrbit = true;
 
-var timeFactor = 10;
-var simulate = true;
+var debugCursorWrite = "Test";
 
-var scaleconstant = 5;
+var timeFactor = 1;
+var simulate = false;
+
+var scaleconstant = 10;
 
 function setup()
 {
@@ -19,37 +22,58 @@ function setup()
     control = new Control();
     ui = new UI();
 
-    for(let i = 0; i < random(10, 20); i++)
+    for(let i = 0; i < random(1, 1); i++)
     {
         systems.push(new SolarSystem());
     }
 }
 
-function draw()
+function update()
 {
-    background(0);
-    ui.update();
 
-    //TRANSLATE
+    for(let i = 0; i < systems.length; i++)
+    {
+        systems[i].update();
+    }
+
+
     control.update();
 
-    //debugCursorWrite = "(X: " + mouseXWorld + ", Y: " + mouseYWorld + ")\n" + (1 / control.scaleFactor);
-    debugCursorWrite = (ui.selected ? ui.selected.name : "");
+    ui.update();
 
 
 
+}
+
+function draw()
+{
+    update();
+
+    background(0, 0, 40);
+
+    //TRANSLATE
+    control.draw();
+
+    //debugCursorWrite = (ui.selected ? ui.selected.name : "bruh");
     for(let i = 0; i < systems.length; i++)
     {
         systems[i].draw();
     }
 
+    return;
+
+    push();
 
     textSize(20 * (1 / control.scaleFactor));
-    push();
-    fill(255);
-    //ellipse(mouseXWorld, mouseYWorld, 15);
 
-    text(debugCursorWrite, mouseXWorld, mouseYWorld);
+    fill(255);
+    text("(0, 0)", 0, 0);
+    text("(" + control.transform.x + ", " + control.transform.y + ")", control.transform.x, control.transform.y);
+    text(debugCursorWrite, mouseWorld.x, mouseWorld.y);
+
+    stroke(255);
+    line(0, 0, control.transformToWorld(createVector(0, 0)).x, control.transformToWorld(createVector(0, 0)).y);
+    
     pop();
 }
 
@@ -79,3 +103,4 @@ function mouseDragged()
     control.mouseDragged();
     return false;
 }
+

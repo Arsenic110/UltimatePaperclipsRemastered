@@ -2,83 +2,134 @@ class SolarSystem
 {
     constructor()
     {
-
         //generate random position
-        this.x = random(-window.innerWidth, window.innerWidth)* (3 * scaleconstant);
-        this.y = random(-window.innerHeight, window.innerHeight) * (3 * scaleconstant);
+        this.x = 0//random(-window.innerWidth, window.innerWidth)* (3 * scaleconstant);
+        this.y = 0//random(-window.innerHeight, window.innerHeight) * (3 * scaleconstant);
 
-        //random color
-        this.B = random(0, 100);
-        this.R = random(200, 255);
-        this.G = random(120, 200);
+        this.pos = createVector(this.x, this.y);
 
-        this.radius = random(80, 180);
+        var stars = 
+        [
+            new Body(this.pos.x + 150, this.pos.y, this.pos.x, this.pos.y, "star 1", 80, 1),
+            new Body(this.pos.x + 150, this.pos.y, this.pos.x, this.pos.y, "star 2", 80, 1)
+        ];
+        stars[0].rotateDeg(this.pos, 180);
 
-        //generate some planet bodies
-        this.planets = [];
-        for(let i = 0; i < random(1, 10); i++)
+        var p = 
+        [
+            new Body(this.pos.x + 1800, this.pos.y, this.pos.x, this.pos.y, "star 1", 10, 2),
+            new Body(this.pos.x + 1800, this.pos.y, this.pos.x, this.pos.y, "star 2", 20, 2)
+        ]
+        p[0].rotateDeg(createVector(this.pos.x + 1700, this.pos.y), 180);
+
+        var s = [new Satellite(this.pos.x + 2200, this.pos.y, this.pos.x, this.pos.y, "Bruh", 2, 4 * timeFactor)];
+
+        var bb = [new Body(this.pos.x + 1000, this.pos.y, this.pos.x, this.pos.y, "Bruh", 20, 8.5 * timeFactor)];
+        bb[0].addNewSat();
+
+        //step 1: generate members
+        this.members = [];
+        for(let i = 0; i < random(1, 1); i++)
         {
-            this.planets.push(new Body(this.x + (100 * scaleconstant) + 40 * ((i + 1) * scaleconstant), this.y,"Planet " + i, 3))
+            this.members.push(
+                new Member(
+                    //barycenter, array of bodies, array of satellites, orbitalspeed
+                    this.pos, this.pos, bb, 
+                    [new Satellite(this.pos.x + 500, this.pos.y, this.pos.x, this.pos.y, "Bruh", 2, 6 * timeFactor)], 5
+                )
+                );
         }
+        this.members.push(new Member(this.pos, this.pos, stars, [], 0));
+        this.members.push(new Member(this.pos, createVector(this.pos.x + 1700, this.pos.y), p, s, 8));
+    }
+
+    makeMember()
+    {
+        //First, stars
+        var stars = [];
+
+        if(random(0,1))
+        {
+            //if 2 stars
+            stars = 
+            [
+                new Body(this.pos.x + 150, this.pos.y, this.pos.x, this.pos.y, "star 1", 80, 1),
+                new Body(this.pos.x + 150, this.pos.y, this.pos.x, this.pos.y, "star 2", 80, 1)
+            ];
+            b[0].rotateDeg(this.pos, 180);
+        }
+        else
+        {
+            //if 1 star
+            stars = 
+            [
+                new Body(this.pos.x, this.pos.y, this.pos.x, this.pos.y, "star 1", 80, 1)
+            ];
+        }
+        //Then, bodies!
+        for(let i = 0; i < random(0, 10); i++)
+        {
+            let r = random(0, 4);
+            if(r == 4)
+            {
+                //binary
+                var p = 
+                [
+                    new Body(this.pos.x + 1800, this.pos.y, this.pos.x, this.pos.y, "star 1", 10, 2),
+                    new Body(this.pos.x + 1800, this.pos.y, this.pos.x, this.pos.y, "star 2", 20, 2)
+                ]
+                p[0].rotateDeg(createVector(this.pos.x + 1700, this.pos.y), 180);
+            }
+            else
+            {
+                //single
+
+            }
+        }
+
+        //lastly, trailing satellites.
+
+    }
+
+    update()
+    {
+        this.pos = createVector(this.x, this.y);
+
+        if(!simulate)
+            return;
+
+        for(let i = 0; i < this.members.length; i++)
+        {
+            //planet around star
+            this.members[i].update();
+        }
+
     }
 
     draw()
     {
-        for(let i = 0; i < this.planets.length; i++)
+        for(let i = 0; i < this.members.length; i++)
         {
-            if(simulate)
-            {
-                //planet around star
-                this.planets[i].rotate(this.x, this.y, (i + 1) * timeFactor);
-            }
-            this.planets[i].drawBody();
+            this.members[i].draw();
         }
-
-        push();
-
-        noStroke();
-        fill(this.R, this.G, this.B);
-        ellipse(this.x , this.y, this.radius);
-
-        pop();
-        return;
-    }
-
-    checkCollision()
-    {
-        //this is a mess. returns [] if no collision, ["planet", 0-9], or ["moon", 0-9, 0-9]
-        var target;// = [];
-        for(let v = 0; v < this.planets.length; v++)
-        {
-            if (dist(mouseXWorld, mouseYWorld, this.planets[v].x, this.planets[v].y) <= this.planets[v].radius / 2)
-            {
-
-                target = this.planets[v];
-            }
-
-            for(let p = 0; p < this.planets[v].satellites.length; p++)
-            {
-                if (dist(mouseXWorld, mouseYWorld, this.planets[v].satellites[p].x, this.planets[v].satellites[p].y) <= this.planets[v].satellites[p].radius / 2)
-                {
-                    target = this.planets[v].satellites[p];
-                }
-            }
-            
-        }
-        return target;
     }
 }
 
 class Body
 {
-    constructor(x, y, name, sat, maxmass)
+    constructor(x, y, cx, cy, name, maxmass, orbitalSpeed)
     {
         this.x = x;
         this.y = y;
 
-        this.highlight = false;
+        this.cx = cx;
+        this.cy = cy;
 
+        this.pos = createVector(x, y);
+
+        this.highlight = false;
         this.name = name;
+        this.orbitalSpeed = orbitalSpeed;
 
         //generate mass, which is then used for radius
         if(maxmass == null)
@@ -89,18 +140,146 @@ class Body
         //radius (used for rendering & hitboxes)
         this.radius = Math.sqrt(this.mass) * (3 * scaleconstant);
 
-        if(sat == null)
-            sat = 0;
-        if(sat < 1)
-            sat = 0;
-
         //any satellites?
         this.satellites = [];
-        for(let i = 0; i < sat; i++)
+        for(let i = 0; i < random(0, 0); i++)
         {
             //push new satellites
-            this.satellites.push(new Body(this.x + (this.radius * 1) + i * this.radius / 2, this.y, this.name + ", Moon " + i, random(0, 1), 0.5));
+            this.satellites.push(new Satellite(this.x + 100, this.y, this.x, this.y, this.name + ", Moon " + i, 0.5, orbitalSpeed / 3));
         }
+
+        this.color =
+        {
+            R: random(0, 255) * 10,
+            G: random(0, 255) * 10,
+            B: random(0, 255) * 10
+        }
+    }
+
+    addNewSat()
+    {
+        this.satellites = [];
+        for(let i = 0; i < 1; i++)
+        {
+            //push new satellites
+            this.satellites.push(new Satellite(this.x + 100, this.y, this.x, this.y, this.name + ", Moon " + i, 3, this.orbitalSpeed / 3));
+        }
+    }
+
+    update(c, o)
+    {
+
+        this.cx = c.x;
+        this.cy = c.y;
+
+        if(o == undefined)
+            o = this.orbitalSpeed;
+
+        var radians = (Math.PI / 180) * (2 / o),
+        cos = Math.cos(radians),
+        sin = Math.sin(radians),
+        nx = (cos * (this.x - c.x)) + (sin * (this.y - c.y)) + c.x,
+        ny = (cos * (this.y - c.y)) - (sin * (this.x - c.x)) + c.y;
+
+        this.x = nx;
+        this.y = ny;
+
+        this.pos = createVector(nx, ny);
+
+        for(let i = 0; i < this.satellites.length; i++)
+        {
+            //around barycenter
+            this.satellites[i].update(c, o);
+
+            //around body
+            this.satellites[i].update(this.pos);
+        }
+    }
+
+    rotateDeg(c, deg) 
+    {
+        this.cx = c.x;
+        this.cy = c.y;
+        var radians = (Math.PI / 180) * deg,
+        cos = Math.cos(radians),
+        sin = Math.sin(radians),
+        nx = (cos * (this.x - c.x)) + (sin * (this.y - c.y)) + c.x,
+        ny = (cos * (this.y - c.y)) - (sin * (this.x - c.x)) + c.y;
+
+        this.x = nx;
+        this.y = ny;
+
+        this.pos = createVector(nx, ny);
+
+        for(let i = 0; i < this.satellites.length; i++)
+        {
+            //around barycenter
+            this.satellites[i].update(c, this.orbitalSpeed);
+
+            //around body
+            this.satellites[i].update(this.pos);
+        }
+    }
+
+    draw()
+    {
+        push();
+
+        if(debugOrbit)
+        {
+            noFill();
+            stroke(0, 255, 0);
+
+            strokeWeight(control.scale);
+
+            //console.log(this.cx, this.cy, dist(this.x, this.y, this.cx, this.cy));
+
+            ellipse(this.cx, this.cy, dist(this.x, this.y, this.cx, this.cy) * 2);
+        }
+
+        noStroke();
+        if(this.highlight)
+        {
+            fill(255);
+            ellipse(this.x, this.y, this.radius + 10 * control.scale);
+        }
+
+        fill(this.color.R, this.color.G, this.color.B);
+        ellipse(this.pos.x, this.pos.y, this.radius);
+
+        for(let i = 0; i < this.satellites.length; i++)
+        {
+            this.satellites[i].draw();
+        }
+
+        pop();
+    }
+}
+
+class Satellite
+{
+    constructor(x, y, cx, cy, name, maxmass, orbitalSpeed)
+    {
+        this.x = x;
+        this.y = y;
+
+        this.cx = cx;
+        this.cy = cy;
+
+        this.pos = createVector(x, y);
+
+        this.highlight = false;
+        this.name = name;
+        this.orbitalSpeed = orbitalSpeed;
+
+        //generate mass, which is then used for radius
+        if(maxmass == null)
+            this.mass = random(0.1, 20);
+        else
+            this.mass = random(maxmass / 10, maxmass);
+
+        //radius (used for rendering & hitboxes)
+        this.radius = Math.sqrt(this.mass) * (3 * scaleconstant);
 
         this.color =
         {
@@ -110,28 +289,24 @@ class Body
         }
     }
 
-    rotate(cx, cy, index) 
+    update(c, o)
     {
-        //index is degrees
-        var radians = (Math.PI / 180) * (2 / index),
+        this.cx = c.x;
+        this.cy = c.y;
+
+        if(o == undefined)
+            o = this.orbitalSpeed;
+
+        var radians = (Math.PI / 180) * (2 / o),
         cos = Math.cos(radians),
         sin = Math.sin(radians),
-        nx = (cos * (this.x - cx)) + (sin * (this.y - cy)) + cx,
-        ny = (cos * (this.y - cy)) - (sin * (this.x - cx)) + cy;
+        nx = (cos * (this.x - c.x)) + (sin * (this.y - c.y)) + c.x,
+        ny = (cos * (this.y - c.y)) - (sin * (this.x - c.x)) + c.y;
 
-
-        //console.log(this.x, this.nx, index);
         this.x = nx;
         this.y = ny;
 
-
-        for(let i = 0; i < this.satellites.length; i++)
-        {
-            this.satellites[i].rotate(cx, cy, index);
-            this.satellites[i].rotate(this.x, this.y, (i + 1) * timeFactor / 10);
-
-        }
-        
+        this.pos = createVector(nx, ny);
     }
 
     rotateDeg(cx, cy, deg) 
@@ -152,26 +327,98 @@ class Body
         }
     }
 
-    drawBody()
+    draw()
     {
         push();
 
-        noStroke();
+        if(debugOrbit)
+        {
+            noFill();
+            stroke(0, 255, 0);
 
+            strokeWeight(control.scale);
+
+            ellipse(this.cx, this.cy, dist(this.x, this.y, this.cx, this.cy) * 2);
+        }
+
+        noStroke();
         if(this.highlight)
         {
             fill(255);
-            ellipse(this.x, this.y, this.radius * 1.1);
+            ellipse(this.x, this.y, this.radius + 10 * control.scale);
         }
 
-        fill(this.color.R, this.color.G, this.color.B);
+        fill(this.color.R, this.color.R, this.color.R);
         ellipse(this.x, this.y, this.radius);
 
-        for(let i = 0; i < this.satellites.length; i++)
+        pop();
+    }
+}
+
+class Member
+{
+    constructor(c, b, bodies, satellites, orbitalSpeed)
+    {
+        this.center = c;
+        this.barycenter = b;
+        this.bodies = bodies;
+        this.satellites = satellites;
+        this.orbitalSpeed = orbitalSpeed;
+
+        //member represents the barycenter of a collection of bodies and satellites
+    }
+
+    update()
+    {
+         var radians = (Math.PI / 180) * (2 / this.orbitalSpeed),
+            cos = Math.cos(radians), 
+            sin = Math.sin(radians),
+            nx = (cos * (this.barycenter.x - this.center.x)) + (sin * (this.barycenter.y - this.center.y)) + this.center.x,
+            ny = (cos * (this.barycenter.y - this.center.y)) - (sin * (this.barycenter.x - this.center.x)) + this.center.y;
+        
+        this.barycenter = createVector(nx, ny);
+
+        this.bodies.forEach((b) => 
         {
-            this.satellites[i].drawBody();
+            if(this.center.x != this.barycenter.x && this.center.y != this.barycenter.y)
+                b.update(this.center, this.orbitalSpeed);
+            b.update(this.barycenter);
+        });
+
+        this.satellites.forEach((s) =>
+        {
+            if(this.center.x != this.barycenter.x && this.center.y != this.barycenter.y)
+                s.update(this.center, this.orbitalSpeed);
+            s.update(this.barycenter);
+        });
+    }
+
+    draw()
+    {
+
+        push();
+        if(debugOrbit)
+        {
+            noFill();
+            stroke(0, 255, 0);
+            strokeWeight(control.scale);
+            let nya = 20;
+            line(this.barycenter.x - nya, this.barycenter.y - nya, this.barycenter.x + nya, this.barycenter.y + nya);
+            line(this.barycenter.x + nya, this.barycenter.y - nya, this.barycenter.x - nya, this.barycenter.y + nya);
+            ellipse(this.center.x, this.center.y, dist(this.barycenter.x, this.barycenter.y, this.center.x, this.center.y) * 2);
         }
 
         pop();
+
+
+        this.bodies.forEach((b) => 
+        {
+            b.draw();
+        });
+
+        this.satellites.forEach((s) =>
+        {
+            s.draw();
+        });
     }
 }
