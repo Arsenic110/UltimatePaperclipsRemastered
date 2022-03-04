@@ -113,6 +113,10 @@ class Control
             //this.transform = this.transformToWorld(createVector(mouseX - window.width / 2, mouseY - window.height / 2));
             background(0);
         }
+        if(keyCode == 61)
+        {
+            debugOrbit ^= true;
+        }
 
     }
 
@@ -167,14 +171,35 @@ class Control
         var bwa;
         for(let i = 0; i < systems.length; i++)
         {
-            bwa = systems[i].checkCollision();
+            //bwa = systems[i].checkCollision();
             if(bwa != undefined)
                 break;
         }
         //if(bwa == undefined)
         //    return;
 
+        //check if we clicked on a tile
+        for(let i = 0; i < colony.chunks.length; i++)
+        {
+            if(this.isMouseInside(colony.chunks[i].pos.x * 32, colony.chunks[i].pos.y * 32, colony.chunks[i].bounds.x, colony.chunks[i].bounds.y, mouseWorld.x, mouseWorld.y))
+            {
+                var x = mouseWorld.x - mouseWorld.x % 32, y = mouseWorld.y- mouseWorld.y % 32;
+
+                colony.chunks[i].addNewTile(x / 32, y / 32, SolarPanelTile);
+                return;
+            }
+        }
+
         ui.setSelect(bwa);
 
+    }
+
+    isMouseInside(x, y, w, h, mx, my)
+    {
+        if(mx > x && mx < x + w && my > y && my < y + h)
+        {
+            return true; 
+        } 
+        return false; 
     }
 }

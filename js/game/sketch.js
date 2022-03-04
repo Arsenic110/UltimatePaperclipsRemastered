@@ -2,6 +2,8 @@ let control;
 let ui;
 var systems = [];
 
+var colony;
+
 var selectedPlanet;
 
 var mouse; //createVector(mouseX, mouseY);
@@ -11,10 +13,15 @@ var debugOrbit = true;
 
 var debugCursorWrite = "Test";
 
-var timeFactor = 1;
+var timeFactor = 50;
 var simulate = false;
 
 var scaleconstant = 10;
+
+var mode = "planetside";
+
+var generationManager;
+var energyPool = 0;
 
 function setup()
 {
@@ -26,6 +33,10 @@ function setup()
     {
         systems.push(new SolarSystem());
     }
+    generationManager = new GenerationManager();
+    colony = new World();
+
+
 }
 
 function update()
@@ -35,46 +46,38 @@ function update()
     {
         systems[i].update();
     }
-
+    colony.update();
+    generationManager.update();
 
     control.update();
-
     ui.update();
-
-
-
 }
 
 function draw()
 {
     update();
 
-    background(0, 0, 40);
+    background(0, 0, 40, 255);
 
     //TRANSLATE
     control.draw();
 
-    //debugCursorWrite = (ui.selected ? ui.selected.name : "bruh");
+    if(mode == "map")
     for(let i = 0; i < systems.length; i++)
     {
         systems[i].draw();
     }
+    if(mode == "planetside")
+        colony.draw();
+
+
+
+
+    textSize(32);
+    fill(255, 255, 150);
+    text("Power: " + energyPool, 0, -30);
 
     return;
-
-    push();
-
-    textSize(20 * (1 / control.scaleFactor));
-
-    fill(255);
-    text("(0, 0)", 0, 0);
-    text("(" + control.transform.x + ", " + control.transform.y + ")", control.transform.x, control.transform.y);
-    text(debugCursorWrite, mouseWorld.x, mouseWorld.y);
-
-    stroke(255);
-    line(0, 0, control.transformToWorld(createVector(0, 0)).x, control.transformToWorld(createVector(0, 0)).y);
-    
-    pop();
 }
 
 function keyPressed()

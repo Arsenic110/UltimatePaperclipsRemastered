@@ -8,87 +8,130 @@ class SolarSystem
 
         this.pos = createVector(this.x, this.y);
 
-        var stars = 
-        [
-            new Body(this.pos.x + 150, this.pos.y, this.pos.x, this.pos.y, "star 1", 80, 1),
-            new Body(this.pos.x + 150, this.pos.y, this.pos.x, this.pos.y, "star 2", 80, 1)
-        ];
-        stars[0].rotateDeg(this.pos, 180);
 
-        var p = 
-        [
-            new Body(this.pos.x + 1800, this.pos.y, this.pos.x, this.pos.y, "star 1", 10, 2),
-            new Body(this.pos.x + 1800, this.pos.y, this.pos.x, this.pos.y, "star 2", 20, 2)
-        ]
-        p[0].rotateDeg(createVector(this.pos.x + 1700, this.pos.y), 180);
-
-        var s = [new Satellite(this.pos.x + 2200, this.pos.y, this.pos.x, this.pos.y, "Bruh", 2, 4 * timeFactor)];
-
-        var bb = [new Body(this.pos.x + 1000, this.pos.y, this.pos.x, this.pos.y, "Bruh", 20, 8.5 * timeFactor)];
-        bb[0].addNewSat();
-
-        //step 1: generate members
         this.members = [];
-        for(let i = 0; i < random(1, 1); i++)
+
+        for(let i = 0; i < random(5, 10); i++)
         {
-            this.members.push(
-                new Member(
-                    //barycenter, array of bodies, array of satellites, orbitalspeed
-                    this.pos, this.pos, bb, 
-                    [new Satellite(this.pos.x + 500, this.pos.y, this.pos.x, this.pos.y, "Bruh", 2, 6 * timeFactor)], 5
-                )
-                );
+            break;
+            this.members.push(this.generateMember(this.pos, createVector(this.pos.x + 500 * i, this.pos.y), i));
         }
-        this.members.push(new Member(this.pos, this.pos, stars, [], 0));
-        this.members.push(new Member(this.pos, createVector(this.pos.x + 1700, this.pos.y), p, s, 8));
+
+        this.members = this.generateSol();
     }
 
-    makeMember()
+    generateMember(center, pos, index)
     {
-        //First, stars
-        var stars = [];
 
-        if(random(0,1))
+    var member, stars = [], bodies = [], satellites = [];
+
+        if(index == 0)
         {
-            //if 2 stars
-            stars = 
-            [
-                new Body(this.pos.x + 150, this.pos.y, this.pos.x, this.pos.y, "star 1", 80, 1),
-                new Body(this.pos.x + 150, this.pos.y, this.pos.x, this.pos.y, "star 2", 80, 1)
-            ];
-            b[0].rotateDeg(this.pos, 180);
-        }
-        else
-        {
-            //if 1 star
-            stars = 
-            [
-                new Body(this.pos.x, this.pos.y, this.pos.x, this.pos.y, "star 1", 80, 1)
-            ];
-        }
-        //Then, bodies!
-        for(let i = 0; i < random(0, 10); i++)
-        {
-            let r = random(0, 4);
-            if(r == 4)
+            //First, stars
+            if(random([0,1])) //did you know binary pairs are much more common in the milky way than singular stars?
             {
-                //binary
-                var p = 
+                
+                //if 2 stars
+                stars = 
                 [
-                    new Body(this.pos.x + 1800, this.pos.y, this.pos.x, this.pos.y, "star 1", 10, 2),
-                    new Body(this.pos.x + 1800, this.pos.y, this.pos.x, this.pos.y, "star 2", 20, 2)
-                ]
-                p[0].rotateDeg(createVector(this.pos.x + 1700, this.pos.y), 180);
+                    new Body(pos.x + 150, pos.y, pos.x, pos.y, "star 1", 80, 1),
+                    new Body(pos.x + 150, pos.y, pos.x, pos.y, "star 2", 80, 1)
+                ];
+                stars[0].rotateDeg(this.pos, 180);
             }
             else
             {
-                //single
-
+                //if 1 star
+                stars = 
+                [
+                    new Body(pos.x, pos.y, pos.x, pos.y, "star 1", 80, 1)
+                ];
             }
+
+            member = new Member(pos, pos, stars, [], 0);
+            return member;
+        }
+        let r = random(1, 2);
+        //1 in 10 chance of being binary planet
+        if(random([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]) == 4)  //rolled a die. guaranteed to be random
+        {
+
+            //double planet
+            bodies = 
+            [
+                new Body(pos.x + 60 , pos.y, pos.x, pos.y, "body 1", 3, 2 / r),
+                new Body(pos.x + 60 , pos.y, pos.x, pos.y, "body 2", 4, 2 / r)
+            ]
+            bodies[0].rotateDeg(createVector(pos.x, pos.y), 180);
+
+            //bodies[0].addNewSat(random([0,1]));
+            //bodies[1].addNewSat(random([0,1]));
+
+        }
+        else
+        {
+            bodies = 
+            [
+                new Body(pos.x, pos.y, pos.x, pos.y, "body 1", 5, 2 / r)
+            ]
+            //bodies[0].addNewSat(random(0,1));
         }
 
-        //lastly, trailing satellites.
+        if(random([0, 5]))
+        {
+            satellites.push(new Satellite(
+                pos.x + 100 + 130 * random(0,1), pos.y, pos.x, pos.y, "sat 1", 0.5, 1.2 * random(0.5,1.5)
+            ));
+        }
+        member = new Member(center, pos, bodies, satellites, 3 * index);
+        return member;
 
+    }
+
+    generateSol()
+    {
+        var mm = [];
+        var c = createVector(0, 0);
+        var v = 10;
+        var g = 0;
+
+        //sol
+        mm.push(new Member(
+            c, c, [new Body(c.x, c.y, c.x, c.y, "Sol", 10, 1)], [], 1
+        ))
+
+        g=1;
+        mm.push(new Member(
+            c, this.cg(v * g), [new Body(this.cg(v * g).x, this.cg(v * g).y, this.cg(v * g).x, this.cg(v * g).y, "Mercury", 1, 30)], [], 30
+        ))
+
+        g=2;
+        mm.push(new Member(
+            c, this.cg(v * g), [new Body(this.cg(v * g).x, this.cg(v * g).y, this.cg(v * g).x, this.cg(v * g).y, "Venus", 9, 60)], [], 60
+        ))
+
+        g=3;
+        mm.push(new Member(
+            c, this.cg(v * g), [new Body(this.cg(v * g).x, this.cg(v * g).y, this.cg(v * g).x, this.cg(v * g).y, "Earth", 10, 100)], [], 100
+        ))
+
+        g=4;
+        mm.push(new Member(
+            c, this.cg(v * g), [new Body(this.cg(v * g).x, this.cg(v * g).y, this.cg(v * g).x, this.cg(v * g).y, "Mars", 4, 100)], [], 400
+        ))
+
+        g=5;
+        mm.push(new Member(
+            c, this.cg(v * g), [new Body(this.cg(v * g).x, this.cg(v * g).y, this.cg(v * g).x, this.cg(v * g).y, "Jupiter", 60, 100)], [], 1000
+        ))
+
+        return mm;
+    }
+
+    
+    cg(x)
+    {//helper method for generateSol()
+        return createVector(x * 100, 0);
     }
 
     update()
@@ -101,7 +144,7 @@ class SolarSystem
         for(let i = 0; i < this.members.length; i++)
         {
             //planet around star
-            this.members[i].update();
+            this.members[i].update(this.pos);
         }
 
     }
@@ -156,13 +199,13 @@ class Body
         }
     }
 
-    addNewSat()
+    addNewSat(rr)
     {
         this.satellites = [];
-        for(let i = 0; i < 1; i++)
+        for(let i = 0; i < rr; i++)
         {
             //push new satellites
-            this.satellites.push(new Satellite(this.x + 100, this.y, this.x, this.y, this.name + ", Moon " + i, 3, this.orbitalSpeed / 3));
+            this.satellites.push(new Satellite(this.x + 200 * i, this.y, this.x, this.y, this.name + ", Moon " + i, 3, this.orbitalSpeed / 3));
         }
     }
 
@@ -175,7 +218,7 @@ class Body
         if(o == undefined)
             o = this.orbitalSpeed;
 
-        var radians = (Math.PI / 180) * (2 / o),
+        var radians = (Math.PI / 180) * (2 / o * timeFactor),
         cos = Math.cos(radians),
         sin = Math.sin(radians),
         nx = (cos * (this.x - c.x)) + (sin * (this.y - c.y)) + c.x,
@@ -297,7 +340,7 @@ class Satellite
         if(o == undefined)
             o = this.orbitalSpeed;
 
-        var radians = (Math.PI / 180) * (2 / o),
+        var radians = (Math.PI / 180) * (2 / o * timeFactor),
         cos = Math.cos(radians),
         sin = Math.sin(radians),
         nx = (cos * (this.x - c.x)) + (sin * (this.y - c.y)) + c.x,
@@ -357,10 +400,10 @@ class Satellite
 
 class Member
 {
-    constructor(c, b, bodies, satellites, orbitalSpeed)
+    constructor(center, barycenter, bodies, satellites, orbitalSpeed)
     {
-        this.center = c;
-        this.barycenter = b;
+        this.center = center;
+        this.barycenter = barycenter;
         this.bodies = bodies;
         this.satellites = satellites;
         this.orbitalSpeed = orbitalSpeed;
@@ -368,15 +411,19 @@ class Member
         //member represents the barycenter of a collection of bodies and satellites
     }
 
-    update()
+    update(c)
     {
-         var radians = (Math.PI / 180) * (2 / this.orbitalSpeed),
+        this.center = c;
+
+         var radians = (Math.PI / 180) * (2 / this.orbitalSpeed * timeFactor),
             cos = Math.cos(radians), 
             sin = Math.sin(radians),
             nx = (cos * (this.barycenter.x - this.center.x)) + (sin * (this.barycenter.y - this.center.y)) + this.center.x,
             ny = (cos * (this.barycenter.y - this.center.y)) - (sin * (this.barycenter.x - this.center.x)) + this.center.y;
         
         this.barycenter = createVector(nx, ny);
+
+
 
         this.bodies.forEach((b) => 
         {
