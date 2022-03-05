@@ -15,7 +15,7 @@ class World
         {
             for (let j = 0; j < this.worldSize.y; j++)
             {
-                this.chunks.push(new Chunk(i, j));
+                this.chunks.push(new Chunk(i, j, ctoi(i, j, this.worldSize.x)));
             }
         }
 
@@ -41,35 +41,46 @@ class World
 class Chunk
 {
     // a single chunk is a 16 * 16 set of tiles.
-    constructor(x, y)
+    constructor(x, y, cindex)
     {//(x, y) in chunk coords
         this.tileset = [];
         this.pos = createVector(x * 16, y * 16);
         this.bounds = createVector(16 * 32, 16 * 32);
 
+        this.chunk = cindex;
+
         for (let i = 0; i < 16; i++)
         {
             for (let j = 0; j < 16; j++)
             {
-                this.tileset.push(new Tile(this.pos.x + i, this.pos.y + j, {R:100, G:100, B:100}));
+                this.tileset.push([new Tile(this.pos.x + i, this.pos.y + j, this.chunk)]);
             }
         }
 
-        //this.tileset.push(new SolarPanelTile(this.pos.x, this.pos.y));
     }
 
     addNewTile(x, y, type)
     {
         for(let i = 0; i < this.tileset.length; i++)
         {
-            if(this.tileset[i].x == x && this.tileset[i].y == y && !(this.tileset[i] instanceof Tile))
-            return;
+            if(this.tileset[i][0].x == x && this.tileset[i][0].y == y)
+                console.log(this.tileset[i]);
+
+            if(this.tileset[i][0].x == x && this.tileset[i][0].y == y && this.tileset[i][1])
+            {
+                return;
+            }
+            else if (this.tileset[i][0].x == x && this.tileset[i][0].y == y)
+            {
+                this.tileset[i].push(new type(x, y, this.chunk));
+            }
+
         }
-        this.tileset.push(new type(x, y));
     }
 
     update()
     {
+        return;
         for(let i = 0; i < this.tileset.length; i++)
         {
             //this.tileset[i].update();
@@ -80,13 +91,16 @@ class Chunk
     {
         for(let i = 0; i < this.tileset.length; i++)
         {
-            this.tileset[i].draw();
+            for(let j = 0; j < this.tileset[i].length; j++)
+            {
+                this.tileset[i][j].draw();
+            }
         }
 
         //rect(this.pos.x * 32, this.pos.y * 32, this.bounds.x, this.bounds.y);
 
-
-        return;
+        if(!debugDraw)
+            return;
 
         push();
         stroke(0, 255, 0);
@@ -96,23 +110,30 @@ class Chunk
         line(this.pos.x * 32 - bruh, this.pos.y * 32 + bruh, this.pos.x * 32 + bruh, this.pos.y * 32 - bruh);
         pop();
     }
+
+
 }
 
 class Tile
 {
     //simple tile class. Has coords, and a color/texture to draw.
-    constructor(x, y, color)
+    constructor(x, y, cindex)
     {//(x, y) in global tile coords
         this.x = x;
         this.y = y;
-        this.color = color;
+        this.pos = createVector(x, y);
+        this.color = {R:100, G:100, B:100}
+
+        this.chunk = cindex;
+
+        this.a = "Tile";
 
         this.tileSize = 32;
     }
 
     name()
     {
-        return "Tile";
+        return this.a;
     }
 
     update()
@@ -182,6 +203,7 @@ class SolarPanelTile
         this.pos = createVector(x, y);
 
         this.color = {R:60, G:80, B:190};
+        this.a = "SolarPanelTile";
 
         this.tileSize = 32;
         this.bounds = createVector(this.tileSize, this.tileSize);
@@ -272,7 +294,7 @@ class SolarPanelTile
 
     name()
     {
-        return "SolarPanelTile";
+        return this.a;
     }
 }
 
@@ -285,8 +307,9 @@ class ConduitTile
         this.pos = createVector(x, y);
         this.color = {R:40, G:40, B:40};
         this.tileSize = 32;
+        this.a = "ConduitTile";
 
-        this.bounds = createVector(this.tileSize, this.tileSize / 3);
+        this.bounds = createVector(this.tileSize / 3, this.tileSize / 3);
         generationManager.subscribe(this);
 
         this.electricComponent = new ElectricComponent({north: false, south: false, east: false, west: false});
@@ -299,24 +322,25 @@ class ConduitTile
         //debugger;
         for(let i = 0; i < neighbors.length; i++)
         {
-            //neighbors[i].color = {R:255, G:0, B:0};
+            //neighbors[i][0].color = {R:255, G:0, B:0};
             
-            if (neighbors[i].electricComponent != null)
+
+            if (neighbors[i].length > 1 && neighbors[i][1].electricComponent)
             {
                 //yoo its a connection
-                if(i == 1)// && neighbors[i].electricComponent.layout.south)
+                if(i == 1)// && neighbors[i][1].electricComponent.layout.south)
                 {
                     this.electricComponent.layout.north = true;
                 }
-                if(i == 3)// && neighbors[i].electricComponent.layout.west)
-                {
-                    this.electricComponent.layout.east = true;
-                }
-                if(i == 4)// && neighbors[i].electricComponent.layout.east)
+                if(i == 3)// && neighbors[i][1].electricComponent.layout.west)
                 {
                     this.electricComponent.layout.west = true;
                 }
-                if(i == 6)// && neighbors[i].electricComponent.layout.north)
+                if(i == 4)// && neighbors[i][1].electricComponent.layout.east)
+                {
+                    this.electricComponent.layout.east = true;
+                }
+                if(i == 6)// && neighbors[i][1].electricComponent.layout.north)
                 {
                     this.electricComponent.layout.south = true;
                 }
@@ -333,6 +357,16 @@ class ConduitTile
         //logic for drawing the tile always in the center, regardless of its size
         rect(this.x * this.tileSize + 1 + (this.tileSize / 2 - this.bounds.x / 2), this.y * this.tileSize + 1 + (this.tileSize / 2 - this.bounds.y / 2), this.bounds.x - 3, this.bounds.y - 3);
 
+        if(this.electricComponent.layout.north)
+            rect(this.x * this.tileSize + 1 + this.tileSize / 3, this.y * this.tileSize + 1, this.tileSize / 3  - 3, this.tileSize / 2 - 3);
+        if(this.electricComponent.layout.south)
+            rect(this.x * this.tileSize + 1 + this.tileSize / 3, this.y * this.tileSize + 1 + this.tileSize / 2, this.tileSize / 3  - 3, this.tileSize / 2 - 3);
+        if(this.electricComponent.layout.west)
+            rect(this.x * this.tileSize + 1, this.y * this.tileSize + 1 + this.tileSize / 2 - (this.tileSize / 3) / 2, this.tileSize / 2  - 3, this.tileSize / 3 - 3);
+        if(this.electricComponent.layout.east)
+            rect(this.x * this.tileSize + 1 + this.tileSize / 2, this.y * this.tileSize + 1 + this.tileSize / 2 - (this.tileSize / 3) / 2, this.tileSize / 2  - 3, this.tileSize / 3 - 3);
+        
+
         if(debugDraw)
             this.electricComponent.draw(this.pos, createVector(32, 32));
         pop();
@@ -340,7 +374,7 @@ class ConduitTile
 
     name()
     {
-        return "ConduitTile";
+        return this.a;
     }
 }
 

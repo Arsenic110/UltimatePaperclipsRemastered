@@ -107,3 +107,8 @@ function mouseDragged()
     return false;
 }
 
+function ctoi(x, y, w)
+{
+    return y * w + x;
+}
+
