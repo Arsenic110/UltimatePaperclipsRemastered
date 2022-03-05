@@ -23,6 +23,8 @@ var mode = "planetside";
 var generationManager;
 var energyPool = 0;
 
+var debugDraw = false, progressBar = false;
+
 function setup()
 {
     createCanvas(window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth, window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight);
@@ -70,12 +72,10 @@ function draw()
     if(mode == "planetside")
         colony.draw();
 
-
-
-
     textSize(32);
     fill(255, 255, 150);
     text("Power: " + energyPool, 0, -30);
+    text("Selected Tile: " + control.placeableTiles[control.selectedTile].toString().split(' ')[1].slice(0, -3), 0, -60);
 
     return;
 }

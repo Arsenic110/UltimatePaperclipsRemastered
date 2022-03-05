@@ -20,10 +20,15 @@ class Control
             68, //a
             65, //d
             32, //space
-            67, //C
+            67, //c
+
         ];
 
         this.trArray = [];
+
+
+        this.placeableTiles = [SolarPanelTile, ConduitTile];
+        this.selectedTile = 0;
     }
 
     update()
@@ -34,29 +39,29 @@ class Control
 
         //move if key down
         if(this.trArray[0])
-        {
+        {//w
             this.transform.y -= this.speed;
             ui.setSelect(undefined);
         }
         if(this.trArray[1])
-        {
+        {//s
             this.transform.y += this.speed;
             ui.setSelect(undefined);
         }
         if(this.trArray[2])
-        {
+        {//a
             this.transform.x += this.speed;
             ui.setSelect(undefined);
         }
         if(this.trArray[3])
-        {
+        {//d
             this.transform.x -= this.speed;
             ui.setSelect(undefined);
         }
+        if(this.trArray[5])
+        {//c
 
-        //transform screenspace coords into worldspace
-        //mouseWorld.x = this.transformToWorld(createVector(mouseX - window.width / 2, mouseY - window.height / 2)).x;
-        //mouseWorld.y = this.transformToWorld(createVector(mouseX - window.width / 2, mouseY - window.height / 2)).y;
+        }
         
 
     }
@@ -110,12 +115,30 @@ class Control
         //print coords if C hit
         if(keyCode == 67)
         {
-            //this.transform = this.transformToWorld(createVector(mouseX - window.width / 2, mouseY - window.height / 2));
-            background(0);
+            switch(this.selectedTile)
+            {
+                case 0:
+                    this.selectedTile++;
+                    break;
+                case 1:
+                    this.selectedTile--;
+                    break;
+            }
         }
         if(keyCode == 61)
         {
             debugOrbit ^= true;
+        }
+
+        if(keyCode == 18)
+        {
+            //alt
+            progressBar = true;
+        }
+        if(keyCode == 17)
+        {
+            //ctrl
+            debugDraw = true;
         }
 
     }
@@ -126,6 +149,17 @@ class Control
         {
             if(keyCode == this.keys[i])
                 this.trArray[i] = false;
+        }
+
+        if(keyCode == 18)
+        {
+            //alt
+            progressBar = false;
+        }
+        if(keyCode == 17)
+        {
+            //ctrl
+            debugDraw = false;
         }
     }
 
@@ -175,8 +209,6 @@ class Control
             if(bwa != undefined)
                 break;
         }
-        //if(bwa == undefined)
-        //    return;
 
         //check if we clicked on a tile
         for(let i = 0; i < colony.chunks.length; i++)
@@ -185,7 +217,7 @@ class Control
             {
                 var x = mouseWorld.x - mouseWorld.x % 32, y = mouseWorld.y- mouseWorld.y % 32;
 
-                colony.chunks[i].addNewTile(x / 32, y / 32, SolarPanelTile);
+                colony.chunks[i].addNewTile(x / 32, y / 32, this.placeableTiles[this.selectedTile]);
                 return;
             }
         }
